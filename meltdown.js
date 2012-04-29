@@ -1,30 +1,28 @@
 if (Meteor.is_client) {
     Meteor.startup(function() {
-        var textpad = document.getElementById("text");
-        var preview = document.getElementById("preview");
+        // Some DOM elements
+        var text = $("#text");
+        var preview = $("#preview");
 
+        // Declaring the Markdown converter with some features enabled
         var converter = new Showdown.converter({
             'github_flavouring': true,
             'tables': true
         });
 
-        var handler = function() {
-            preview.innerHTML = converter.makeHtml(textpad.value);
-            hljs.highlightBlock(preview, '   ', false);
-        };
+        // Every time one press a key, it will convert what is typed to
+        // markdown and apply syntax highlight to the code blocks, if any.
+        $(text).bind("keyup", function() {
+            // covert text code to markdown and put it on the
+            // preview area
+            $(preview).html(converter.makeHtml($(text).val()));
 
-        // Technique from Javascript Definitive Guide (should be removed when
-        // using jQuery or something like that)
-        if (textpad.addEventListener) { // Test for this W3C method before using it
-            textpad.addEventListener("keyup", handler, false);
-        }
-        else if (textpad.attachEvent) { // Test for this IE method before using it
-            textpad.attachEvent("onkeyup", handler);
-
-        }
-        else { // Otherwise, fall back on a universally supported technique
-            textpad.onkeyup = handler;
-        }
+            // Syntax hightlight for each code block, this has to be done here
+            // as we do the syntax highlight in realtime.
+            $('code').each(function(i, e) {
+                hljs.highlightBlock(e);
+            });
+        });
     });
 }
 
