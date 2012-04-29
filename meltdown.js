@@ -1,5 +1,5 @@
 if (Meteor.is_client) {
-    window.onload = function() {
+    Meteor.startup(function() {
         var textpad = document.getElementById("text");
         var preview = document.getElementById("preview");
 
@@ -13,22 +13,23 @@ if (Meteor.is_client) {
             hljs.highlightBlock(preview, '   ', false);
         };
 
+        // Technique from Javascript Definitive Guide (should be removed when
+        // using jQuery or something like that)
         if (textpad.addEventListener) { // Test for this W3C method before using it
-            textpad.addEventListener("keydown", handler, false);
-            textpad.addEventListener("keypress", handler, false);
+            textpad.addEventListener("keyup", handler, false);
         }
         else if (textpad.attachEvent) { // Test for this IE method before using it
-            textpad.attachEvent("onkeydown", handler);
-            textpad.attachEvent("onkeypress", handler);
+            textpad.attachEvent("onkeyup", handler);
+
         }
         else { // Otherwise, fall back on a universally supported technique
-            textpad.onkeydown = textpad.onkeypress = handler;
+            textpad.onkeyup = handler;
         }
-    };
+    });
 }
 
 if (Meteor.is_server) {
     Meteor.startup(function () {
-      // code to run on server at startup
+        // Define Minimongo collections to match server/publish.js.
     });
 }
